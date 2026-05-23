@@ -29,6 +29,7 @@ dev = [
 
 [project.scripts]
 healthomics_lab = "healthomics_lab.pipeline:cli"
+healthomics-emit = "healthomics_lab.process_hooks:cli"
 
 [build-system]
 requires = ["hatchling>=1.21.0"]
