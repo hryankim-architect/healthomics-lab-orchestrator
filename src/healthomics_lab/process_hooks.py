@@ -71,7 +71,12 @@ def cli() -> None:
     "--ledger",
     type=click.Path(dir_okay=False, path_type=Path),
     default=None,
-    help="Override the local NDJSON ledger path (defaults to audit/local-demo.ndjson).",
+    help=(
+        "Override the local NDJSON ledger path. Resolution order: "
+        "--ledger flag > $HEALTHOMICS_AUDIT_LEDGER env var > audit/local-demo.ndjson. "
+        "Nextflow processes run in per-task work dirs, so set the env var to an "
+        "absolute path so per-process entries all land in the same ledger."
+    ),
 )
 def emit(
     stage: str,
@@ -82,6 +87,11 @@ def emit(
     ledger: Path | None,
 ) -> None:
     """Emit one audit entry for a Nextflow process lifecycle event."""
+    if ledger is None:
+        env_ledger = os.environ.get("HEALTHOMICS_AUDIT_LEDGER")
+        if env_ledger:
+            ledger = Path(env_ledger)
+
     parsed_metrics = _parse_metrics(metrics)
 
     fields: dict[str, Any] = {
