@@ -1,5 +1,7 @@
-# Never commit raw data - URLs and checksums live in manifest.yaml
+# Never commit raw data - URLs and checksums live in manifest.yaml.
+# Sample sheet (samples.csv) is canonical pipeline config and IS committed.
 *
 !.gitignore
 !manifest.yaml
+!samples.csv
 !README.md
