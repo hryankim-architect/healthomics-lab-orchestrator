@@ -33,8 +33,15 @@ audit/*.ndjson
 # Outputs / reports
 artifacts/
 reports/
+results/
 *.html
 !notebooks/demo.html
+
+# Nextflow runtime
+work/
+.nextflow/
+.nextflow.log*
+.nextflow-history
 
 # IDE / OS
 .vscode/

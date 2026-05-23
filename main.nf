@@ -205,7 +205,10 @@ process MULTIQC {
 
     output:
         path "multiqc_report.html", emit: report
-        path "multiqc_data",        emit: data
+        // MultiQC names the data dir after the report base ('multiqc_report.html'
+        // -> 'multiqc_report_data'); use a glob so output declaration tracks
+        // whatever MultiQC actually emits.
+        path "multiqc*_data",       emit: data
 
     script:
     """
