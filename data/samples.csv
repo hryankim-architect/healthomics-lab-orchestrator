@@ -1,0 +1,4 @@
+sample_id,condition,fastq_1,fastq_2
+SRR1039508,untreated,data/fastq/SRR1039508_1.fastq.gz,data/fastq/SRR1039508_2.fastq.gz
+SRR1039509,untreated,data/fastq/SRR1039509_1.fastq.gz,data/fastq/SRR1039509_2.fastq.gz
+SRR1039512,dex_treated,data/fastq/SRR1039512_1.fastq.gz,data/fastq/SRR1039512_2.fastq.gz
