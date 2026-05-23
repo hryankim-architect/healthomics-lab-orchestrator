@@ -1,44 +1,32 @@
-# Public-data manifest for the capability-portrait demo.
-#
-# Every input listed here must be:
-#   - publicly accessible without controlled-access tier auth
-#   - small enough that `make run` finishes in the README's stated budget
-#   - checksum-verified (sha256) so the demo is byte-reproducible
-#
-# Adding an input requires editing this file AND the README's "minimum
-# subset" claim. That friction is intentional (see docs/what-is-out-of-scope.md).
-#
-# Schema:
-#   inputs:
-#     - url:       https://...                # public URL
-#       path:      relative/path/inside/data/ # destination under data/
-#       sha256:    <64-hex>                   # required
-#       size_mb:   <int>                      # informational
-#       license:   <SPDX or text>             # required
-#       source:    <one-line provenance>      # required
+# P1 RNA-seq pipeline — minimum-viable inputs
+# All files are NOT committed to git (data/.gitignore). This manifest
+# records their public sources + SHA-256 checksums so 'make data' can
+# re-fetch deterministically.
 
-inputs:
-  - url: https://example.org/tiny-fixture.tsv
-    path: fixtures/tiny.tsv
-    sha256: 0000000000000000000000000000000000000000000000000000000000000000
-    size_mb: 1
-    license: CC0-1.0
-    source: "Replace this stub in the derived repo with real public-data URLs."
+# 3 RNA-seq samples (Himes airway smooth muscle, GSE52778)
+# Downsampled to 1M paired-end reads via 'curl | zcat | head -4M | gzip'
+# ENA URL pattern: vol1/fastq/SRR103/<00X>/<full>/<full>_{1,2}.fastq.gz
+samples:
+  - id: SRR1039508
+    condition: untreated
+  - id: SRR1039509
+    condition: untreated
+  - id: SRR1039512
+    condition: dex_treated
 
-# Per-project examples (uncomment and edit in the derived repo):
-#
-# P3 (tp53-aml-hrd-severity):
-#   - url: https://api.gdc.cancer.gov/data/<file-uuid>
-#     path: tcga-laml/<sample>.vcf.gz
-#     sha256: <hash>
-#     size_mb: 5
-#     license: NIH GDC Data Use Agreement (open tier)
-#     source: TCGA-LAML cohort, GDC Data Portal
-#
-# P1 (healthomics-lab-orchestrator):
-#   - url: https://sra-download.ncbi.nlm.nih.gov/traces/sra<n>/SRR/...
-#     path: rnaseq/SRR1039508_1M.fastq.gz
-#     sha256: <hash>
-#     size_mb: 80
-#     license: Public Domain (SRA)
-#     source: Himes airway smooth muscle (downsampled to 1M reads)
+# chr22 reference (Ensembl GRCh38 chr22 + GENCODE v45 chr22-filtered GTF)
+reference:
+  fasta_url: https://ftp.ensembl.org/pub/release-110/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.22.fa.gz
+  gtf_source: GENCODE v45 (chr22 filtered)
+  index: data/reference/hisat2_index/chr22 (HISAT2)
+
+# SHA-256 checksums (populated from local fixed-seed downloads)
+checksums:
+  - {path: data/fastq/SRR1039508_1.fastq.gz, sha256: 8b8ac2972b118995624b547112e31b2c085360c84e4b4d8d7eabb148f089fe17}
+  - {path: data/fastq/SRR1039508_2.fastq.gz, sha256: e022c906b1da651cb82e0c4aac2905fd365a96633b2eea54b0871b3420e2b0cc}
+  - {path: data/fastq/SRR1039509_1.fastq.gz, sha256: 9d03f87ace74118748b5c3c0b9c6b447dc76757cdd57269921ee780e82f0829a}
+  - {path: data/fastq/SRR1039509_2.fastq.gz, sha256: 9bdb8db281c8778c4b2b96abbbf510df512ad7fbd5490cd88bd3032dd863c738}
+  - {path: data/fastq/SRR1039512_1.fastq.gz, sha256: 38f1118c21a06218820fa51c1c171f8d837a2578b9bc7acad705f0654a2eade2}
+  - {path: data/fastq/SRR1039512_2.fastq.gz, sha256: ee94b3d18bb6d1b21f4c0308faa90791356d2010e12af00e0b663b7aed1620c5}
+  - {path: data/reference/chr22.fa.gz, sha256: 974f97ac8ef7ffae971b63b47608feda327403be40c27e391ee4a1a78b800df5}
+  - {path: data/reference/chr22.gtf.gz, sha256: de73a31fd9c4b4bab1f95d6d5449856d3e7086d7113d9a75966fbaf244e80def}
