@@ -10,7 +10,7 @@ must:
 
 The default fixture exercises the audit emit and tracking modules without
 any external services. Override the fixture path via the
-``BIOSCAFFOLD_CANARY_FIXTURE`` environment variable.
+``HEALTHOMICS_LAB_CANARY_FIXTURE`` environment variable.
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from bioscaffold import audit, tracking
+from healthomics_lab import audit, tracking
 
 DEFAULT_FIXTURE = Path("tests/fixtures/canary.json")
 
@@ -38,7 +38,7 @@ def _load_fixture(path: Path) -> dict[str, Any]:
 def check() -> dict[str, Any]:
     """Run the canary. Returns a structured result dict."""
     fixture_path = Path(
-        os.environ.get("BIOSCAFFOLD_CANARY_FIXTURE", str(DEFAULT_FIXTURE))
+        os.environ.get("HEALTHOMICS_LAB_CANARY_FIXTURE", str(DEFAULT_FIXTURE))
     )
     fixture = _load_fixture(fixture_path)
 
