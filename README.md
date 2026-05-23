@@ -73,7 +73,7 @@ contributor strips the preamble, CI fails.
 ├── data/
 │   ├── .gitignore           # raw data never committed
 │   └── manifest.yaml        # public URLs + checksums for the tiny subset
-├── src/bioscaffold/
+├── src/healthomics_lab/
 │   ├── __init__.py
 │   ├── pipeline.py          # CLI entry; demonstrates audit + tracking pattern
 │   ├── audit.py             # NDJSON hash-chained ledger emit
@@ -91,7 +91,7 @@ contributor strips the preamble, CI fails.
     └── run_lab.sh           # one-liner to execute on a lab node
 ```
 
-Rename `src/bioscaffold/` to your project package name when creating the new
+Rename `src/healthomics_lab/` to your project package name when creating the new
 repo. The substrate modules (`audit.py`, `tracking.py`, `canary.py`) are
 designed to be copy-and-edit, not pip-installed, so each capability repo can
 diverge as needed without coordinating releases.
@@ -129,8 +129,8 @@ demo works without the substrate present:
 |---|---|---|
 | `AUDIT_HOST` | unset | If set, audit entries are POSTed to `http://${AUDIT_HOST}/events`. |
 | `MLFLOW_TRACKING_URI` | unset | If set, MLflow runs are tracked at this URI. |
-| `BIOSCAFFOLD_CANARY_FIXTURE` | `tests/fixtures/canary.json` | Path used by `canary.py` for the deterministic smoke test. |
-| `BIOSCAFFOLD_RUN_NAME` | derived | Overrides the run name in audit + MLflow entries. |
+| `HEALTHOMICS_LAB_CANARY_FIXTURE` | `tests/fixtures/canary.json` | Path used by `canary.py` for the deterministic smoke test. |
+| `HEALTHOMICS_LAB_RUN_NAME` | derived | Overrides the run name in audit + MLflow entries. |
 
 On a Polish-Phase5 lab node, `scripts/run_lab.sh` sets these to the lab
 defaults before invoking `make run`.

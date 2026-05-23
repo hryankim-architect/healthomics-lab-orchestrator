@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bioscaffold import canary
+from healthomics_lab import canary
 
 
 def test_canary_passes_on_default_fixture(tmp_path: Path, monkeypatch) -> None:
@@ -18,7 +18,7 @@ def test_canary_passes_on_default_fixture(tmp_path: Path, monkeypatch) -> None:
     fixture_dst.parent.mkdir(parents=True, exist_ok=True)
     fixture_dst.write_text(fixture_src.read_text())
 
-    monkeypatch.setenv("BIOSCAFFOLD_CANARY_FIXTURE", str(fixture_dst))
+    monkeypatch.setenv("HEALTHOMICS_LAB_CANARY_FIXTURE", str(fixture_dst))
 
     result = canary.check()
     assert result["ok"], result
@@ -28,7 +28,7 @@ def test_canary_passes_on_default_fixture(tmp_path: Path, monkeypatch) -> None:
 def test_canary_fails_on_missing_keys(tmp_path: Path, monkeypatch) -> None:
     fixture_path = tmp_path / "bad.json"
     fixture_path.write_text('{"name": "x"}')
-    monkeypatch.setenv("BIOSCAFFOLD_CANARY_FIXTURE", str(fixture_path))
+    monkeypatch.setenv("HEALTHOMICS_LAB_CANARY_FIXTURE", str(fixture_path))
     monkeypatch.chdir(tmp_path)
 
     result = canary.check()

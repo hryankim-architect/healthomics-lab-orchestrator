@@ -4,7 +4,7 @@
 
 PYTHON ?= .venv/bin/python
 UV ?= uv
-PKG := bioscaffold
+PKG := healthomics_lab
 RUN_NAME ?= demo
 ARTIFACT_DIR := artifacts
 DATA_DIR := data

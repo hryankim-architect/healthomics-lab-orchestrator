@@ -11,7 +11,7 @@ set -euo pipefail
 # --- substrate env (override per host if needed) ---
 export AUDIT_HOST="${AUDIT_HOST:-chi-mac-m:8081}"
 export MLFLOW_TRACKING_URI="${MLFLOW_TRACKING_URI:-http://chi-mac-m:5050}"
-export BIOSCAFFOLD_RUN_NAME="${BIOSCAFFOLD_RUN_NAME:-lab-$(date -u +%Y%m%d-%H%M%S)}"
+export HEALTHOMICS_LAB_RUN_NAME="${HEALTHOMICS_LAB_RUN_NAME:-lab-$(date -u +%Y%m%d-%H%M%S)}"
 
 # --- sanity check ---
 if ! command -v uv >/dev/null 2>&1; then
@@ -22,12 +22,12 @@ fi
 # --- run ---
 echo "[run_lab] AUDIT_HOST=${AUDIT_HOST}"
 echo "[run_lab] MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI}"
-echo "[run_lab] RUN_NAME=${BIOSCAFFOLD_RUN_NAME}"
+echo "[run_lab] RUN_NAME=${HEALTHOMICS_LAB_RUN_NAME}"
 
-uv run make run RUN_NAME="${BIOSCAFFOLD_RUN_NAME}"
+uv run make run RUN_NAME="${HEALTHOMICS_LAB_RUN_NAME}"
 
 # --- post-run: invoke canary for substrate registration ---
 echo "[run_lab] canary check"
-uv run python -m bioscaffold.canary
+uv run python -m healthomics_lab.canary
 
 echo "[run_lab] done"
