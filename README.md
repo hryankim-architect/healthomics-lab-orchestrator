@@ -1,5 +1,7 @@
 # `healthomics-lab-orchestrator`
 
+![ci](https://github.com/hryankim-architect/healthomics-lab-orchestrator/actions/workflows/ci.yml/badge.svg) ![english-only](https://github.com/hryankim-architect/healthomics-lab-orchestrator/actions/workflows/english-only.yml/badge.svg)
+
 > **Capability portrait, not a research result.** Public data is intentionally
 > subsetted (chr22 reference only) to keep the demo small and reproducible on
 > a single workstation in under a minute.
