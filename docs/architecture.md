@@ -1,4 +1,4 @@
-# Architecture — `healthomics-lab-orchestrator`
+# Architecture, `healthomics-lab-orchestrator`
 
 This repo composes two layers that the scaffold template kept separate:
 
@@ -141,7 +141,7 @@ the embedded value is 21 and the final on-disk length is 22.
 
 This is *deliberate*. Putting the count inside the `pipeline_end` entry
 makes the chain self-describing without requiring the closing entry to
-contain a forward reference to itself — which would either be circular
+contain a forward reference to itself, which would either be circular
 (the entry's own `prev_hash` depends on its content, which would include
 the count) or would require a two-pass write (count, then re-hash). The
 fence-post is the simpler invariant.
@@ -204,13 +204,13 @@ launch-time hardening.
 
 Three reasons, in order:
 
-1. **Aggregate metric search** — MLflow's UI surfaces `wall_clock_seconds`,
+1. **Aggregate metric search**, MLflow's UI surfaces `wall_clock_seconds`,
    `audit_chain_entries`, `multiqc_report_bytes` across runs so a reviewer
    can compare performance over time without re-parsing audit files.
-2. **Substrate consistency** — every repo in the quartet posts to the same
+2. **Substrate consistency**, every repo in the quartet posts to the same
    MLflow server, so a reviewer can compare runs across projects in one
    browser tab.
-3. **No-op when absent** — the wrapper means the demo works without an
+3. **No-op when absent**, the wrapper means the demo works without an
    MLflow server, so a recruiter cloning the repo on a laptop still sees
    `make run` succeed without any setup.
 
@@ -223,7 +223,7 @@ remote-first). They are complementary, not redundant.
 ## What this architecture intentionally avoids
 
 - **No DAG engine besides Nextflow.** Airflow, Prefect, Dagster, Argo
-  Workflows, Cromwell — all are valid choices for bioinformatics
+  Workflows, Cromwell, all are valid choices for bioinformatics
   orchestration; this demo specifically picks Nextflow because nf-core
   has standardized the pattern for clinical RNA-seq. The substrate hooks
   are engine-agnostic.

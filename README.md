@@ -24,7 +24,7 @@ Polish-Phase5 `lab_semantic_check.py` probe can call.
 cohorts at full reference scale on AWS HealthOmics during my time directing
 clinical bioinformatics at Gilead, with cost-of-failure budgets that made
 the audit chain non-optional. The lab version here proves the *orchestration
-engineering* and the *substrate integration*, not the biology — see
+engineering* and the *substrate integration*, not the biology, see
 [`docs/what-is-out-of-scope.md`](docs/what-is-out-of-scope.md).
 
 ---
@@ -49,7 +49,7 @@ This repo codifies that pattern in the smallest credible end-to-end demo:
 The pipeline runs FastQC -> HISAT2 alignment -> featureCounts -> MultiQC on
 three downsampled Himes airway smooth muscle samples (SRA SRR1039508-512),
 aligned against a chr22-only GRCh38 reference. The narrow reference is
-intentional and is discussed in the honest-scope section below.
+intentional and is discussed in the scope-explicit section below.
 
 ---
 
@@ -103,7 +103,7 @@ no-ops, so the demo runs cleanly on a fresh checkout without any substrate.
 
 ```bash
 # 0. Pre-flight (macOS, one-time)
-#    System Java 19 is required; brew openjdk is NOT — see docs/tooling-versions.md.
+#    System Java 19 is required; brew openjdk is NOT, see docs/tooling-versions.md.
 #    Bioconda must provide fastqc/hisat2/samtools/featureCounts/seqkit in the
 #    base env. MultiQC lives in a dedicated `multiqc` conda env (lesson L-phi).
 
@@ -149,8 +149,8 @@ End-to-end run on the n=3 chr22-only cohort, chi-mac-p, 2026-05-23:
 
 The 3-4% alignment rate is the *correct* number for a chr22-only reference
 (chr22 is ~1.6% of GRCh38 by length, ~3% by expressed-transcript content).
-That is the engineering proof, not a biology weakness — see the
-honest-scope section below.
+That is the engineering proof, not a biology weakness, see the
+scope section below.
 
 ---
 
@@ -190,7 +190,7 @@ ledger. Final on-disk length is 22. See
 
 ---
 
-## Honest scope — why a chr22-only reference
+## Scope, why a chr22-only reference
 
 The first draft of this demo planned for a full-reference run with the
 ~96% alignment rate that nf-core/rnaseq advertises on standard cohorts. Two

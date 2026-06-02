@@ -1,7 +1,7 @@
-# What is out of scope (P1 — `healthomics-lab-orchestrator`)
+# What is out of scope (P1, `healthomics-lab-orchestrator`)
 
 This file is the anti-scope-creep ledger for the P1 capability portrait.
-The repo's value comes from being *small and complete* — every item below
+The repo's value comes from being *small and complete*, every item below
 is something a reviewer might reasonably ask for that the v0.1 demo
 deliberately does not attempt.
 
@@ -24,7 +24,7 @@ contract that is the v0.1 capability claim. The orchestration question
 the chr22 subset; expanding the reference adds runtime and download
 budget without adding orchestration evidence. A production reference run
 would swap two manifest URLs (`data/manifest.yaml`) and the rest of the
-code is unchanged — that swap is intentionally cheap, but it is not the
+code is unchanged, that swap is intentionally cheap, but it is not the
 demo.
 
 ---
@@ -71,7 +71,7 @@ package manager. This demo uses host-installed tools via bioconda + brew.
 run, require Docker Desktop or Singularity installation, and complicate
 the "no cloud credentials, no GPU, single workstation" promise. The five
 macOS-Nextflow lessons captured in `docs/tooling-versions.md` are the
-*alternative* — a thin set of host-environment hardening rules that get
+*alternative*, a thin set of host-environment hardening rules that get
 the same reproducibility without containers. Adding container support is
 a v0.2+ task, and would be a fork of `nextflow.config` (`profiles { docker
 { ... } }`) rather than a rewrite.
@@ -86,7 +86,7 @@ the reference choice.
 
 **Why out of scope**: multi-organism support adds a parameter
 (`params.organism`), a manifest selector, and a test matrix that grows
-with each species. It buys no orchestration evidence — the audit chain
+with each species. It buys no orchestration evidence, the audit chain
 and MLflow integration look identical regardless of organism. The
 production version of this pipeline at Gilead supported four organisms;
 the lab version proves the orchestration pattern, not the parametrization.
