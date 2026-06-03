@@ -1,9 +1,9 @@
 """End-to-end pipeline entry point.
 
-This is the *pattern* that capability-portrait repos inherit. Each repo
-replaces the body of ``run_pipeline`` with the actual bioinformatics work
-(e.g. P3's VCF→HRD score, P1's Nextflow orchestration, P2's QC classifier,
-P4's IHC + genomics calibration), but keeps the surrounding shape::
+This module provides the pipeline entry-point pattern used across repos.
+Each repo replaces the body of ``run_pipeline`` with its specific bioinformatics
+work (e.g. VCF→HRD scoring, Nextflow orchestration, QC classification, or
+IHC + genomics calibration), but keeps the surrounding shape::
 
     audit_start  →  tracking_start  →  body  →  tracking_end  →  audit_end
 
@@ -103,11 +103,11 @@ def _run_nextflow(job_id: str, profile: str, project_dir: Path) -> int:
 
 
 def run_pipeline(run_name: str, out_dir: Path) -> dict[str, Any]:
-    """Run the chr22 RNA-seq capability portrait end-to-end.
+    """Run the chr22 RNA-seq demonstration pipeline end-to-end.
 
     Wraps the Nextflow DSL2 pipeline (``main.nf``) in the substrate's
     audit + MLflow bracket so the run looks identical to every other
-    capability-portrait repo from the substrate's perspective::
+    the other demo repos from the substrate's perspective::
 
         audit_start -> tracking_start -> nextflow run -> post-mortem
                                                           -> tracking_end -> audit_end
@@ -183,7 +183,7 @@ def run_pipeline(run_name: str, out_dir: Path) -> dict[str, Any]:
 
 @click.group()
 def cli() -> None:
-    """healthomics_lab capability-portrait pipeline."""
+    """healthomics_lab demonstration pipeline."""
 
 
 @cli.command()

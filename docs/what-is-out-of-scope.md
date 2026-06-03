@@ -1,9 +1,9 @@
 # What is out of scope (P1, `healthomics-lab-orchestrator`)
 
-This file is the anti-scope-creep ledger for the P1 capability portrait.
-The repo's value comes from being *small and complete*, every item below
-is something a reviewer might reasonably ask for that the v0.1 demo
-deliberately does not attempt.
+This file tracks deliberate scope boundaries for the P1 orchestration demo.
+The repo's value comes from being *small and complete*. Every item below is
+something a reviewer might reasonably ask for that the v0.1 demo does not
+attempt.
 
 If a future PR proposes any of these, the contributor must answer one
 question: **why is this still out of scope?** If the answer is good, edit
@@ -17,15 +17,13 @@ The demo runs against a chr22-only HISAT2 index (~62 MB). The full GRCh38
 index would be ~4 GB and the per-sample alignment + featureCounts step
 would balloon from sub-second to 5-15 minutes per sample.
 
-**Why out of scope**: full-reference alignment would break the
-"small and reproducible on a single workstation in under a minute"
-contract that is the v0.1 capability claim. The orchestration question
-(audit chain + MLflow + reproducible re-runs) is fully demonstrated on
-the chr22 subset; expanding the reference adds runtime and download
-budget without adding orchestration evidence. A production reference run
-would swap two manifest URLs (`data/manifest.yaml`) and the rest of the
-code is unchanged, that swap is intentionally cheap, but it is not the
-demo.
+**Why out of scope**: full-reference alignment would exceed the size and
+runtime target for this demo (~45 seconds on a single workstation). The
+orchestration mechanics — audit chain, MLflow, reproducible re-runs — are
+fully exercised on the chr22 subset. Expanding the reference adds download
+and runtime cost without adding orchestration evidence. A production
+reference run swaps two manifest URLs in `data/manifest.yaml`; nothing in
+`main.nf` or `pipeline.py` changes.
 
 ---
 
@@ -54,10 +52,10 @@ preseq / dupRadar), and trimming variants. The demo runs four processes.
 
 **Why out of scope**: feature parity with nf-core/rnaseq would re-implement
 ~5,000 lines of upstream Nextflow code and add ~20 GB of bioconda
-dependencies. The capability portrait shows the *DSL2 + substrate wiring
-pattern* on a minimal DAG that is faithful to the nf-core shape (FastQC ->
-align -> count -> MultiQC). Anyone who has read nf-core/rnaseq can read
-`main.nf` here and immediately recognize the pattern; that is the point.
+dependencies. This repo shows the *DSL2 + substrate wiring pattern* on a
+minimal DAG faithful to the nf-core shape (FastQC -> align -> count ->
+MultiQC). Anyone who has read nf-core/rnaseq will recognize the pattern
+immediately; that is the point.
 
 ---
 
@@ -86,10 +84,10 @@ the reference choice.
 
 **Why out of scope**: multi-organism support adds a parameter
 (`params.organism`), a manifest selector, and a test matrix that grows
-with each species. It buys no orchestration evidence, the audit chain
-and MLflow integration look identical regardless of organism. The
-production version of this pipeline at Gilead supported four organisms;
-the lab version proves the orchestration pattern, not the parametrization.
+with each species. The audit chain and MLflow integration are identical
+regardless of organism. The production version of this pipeline at Gilead
+supported four organisms; this demo verifies the orchestration pattern, not
+the parametrization.
 
 ---
 
@@ -100,11 +98,9 @@ subprocess on a single workstation. There is no high availability, no
 role-based access control, no per-tenant resource isolation, no retry
 backoff, no distributed orchestration.
 
-**Why out of scope**: the substrate (`audit.py`, `tracking.py`,
-`canary.py`) provides the building blocks; the capability portrait does
-not re-implement Polish-Phase5 infrastructure. Production hardening
-belongs to the substrate (or to a future deployment-tier repo), not to
-the analytical / orchestration demo.
+**Why out of scope**: the substrate (`audit.py`, `tracking.py`, `canary.py`)
+provides the building blocks. Production hardening belongs to the substrate
+or to a future deployment-tier repo, not to this orchestration demo.
 
 ---
 
@@ -131,12 +127,11 @@ The demo reads pre-downloaded FASTQs from `data/fastq/`. A real clinical
 pipeline often consumes streaming basecaller output (Illumina BCL, ONT
 fast5/pod5) and runs alignment as reads arrive.
 
-**Why out of scope**: streaming inputs add a basecaller dependency
-(Illumina bcl2fastq, Guppy/Dorado for ONT) and an event-driven
-orchestration layer (typically a message queue + a Nextflow `-resume`
-loop). Neither belongs to a static-input capability portrait. The
-audit-chain pattern this repo demonstrates would work with streaming
-inputs unchanged; that's the point.
+**Why out of scope**: streaming inputs require a basecaller (Illumina
+bcl2fastq, Guppy/Dorado for ONT) and an event-driven orchestration layer
+(typically a message queue + a Nextflow `-resume` loop). Neither fits a
+static-input demo. The audit-chain pattern this repo demonstrates would
+work with streaming inputs unchanged.
 
 ---
 
@@ -147,12 +142,11 @@ for differential-expression pipelines; salmon and kallisto bypass
 alignment entirely with pseudoalignment + quantification. The demo uses
 HISAT2 only.
 
-**Why out of scope**: each additional aligner doubles the conda
-dependency surface, requires a different index format, and produces a
-different output (BAM vs. quant.sf vs. abundance.h5). The orchestration
-capability is identical regardless of which aligner the
-`HISAT2_ALIGN`-equivalent process wraps. Adding a second aligner is a
-v0.2 PR that adds one process and one profile.
+**Why out of scope**: each additional aligner doubles the conda dependency
+surface, requires a different index format, and produces different output
+(BAM vs. quant.sf vs. abundance.h5). The orchestration wiring is identical
+regardless of which aligner wraps the `HISAT2_ALIGN`-equivalent process.
+Adding a second aligner is a v0.2 PR: one process, one profile.
 
 ---
 
@@ -168,9 +162,8 @@ operationally awkward.
 substrate-related env vars into each process's `script:` body as
 arguments (e.g. `--ledger ${params.audit_dir}/local-demo.ndjson`) so
 Nextflow's hash sees them. That would add 4 lines per process and slightly
-reduce readability. Deferred to v0.2 once the capability portrait has
-been read by enough people to know whether the readability tradeoff is
-worth it.
+reduce readability. Deferred to v0.2; the tradeoff is whether the extra verbosity per process
+is worth the cleaner cache invalidation behavior.
 
 ---
 

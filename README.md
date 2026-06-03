@@ -1,30 +1,27 @@
 # `healthomics-lab-orchestrator`
 
-![ci](https://github.com/hryankim-architect/healthomics-lab-orchestrator/actions/workflows/ci.yml/badge.svg) ![english-only](https://github.com/hryankim-architect/healthomics-lab-orchestrator/actions/workflows/english-only.yml/badge.svg)
+*Public reference data is subsetted to chr22 only; the full GRCh38 run would exceed the single-workstation size constraint this demo is designed to satisfy.*
 
-> **Capability portrait, not a research result.** Public data is intentionally
-> subsetted (chr22 reference only) to keep the demo small and reproducible on
-> a single workstation in under a minute.
+![ci](https://github.com/hryankim-architect/healthomics-lab-orchestrator/actions/workflows/ci.yml/badge.svg) ![english-only](https://github.com/hryankim-architect/healthomics-lab-orchestrator/actions/workflows/english-only.yml/badge.svg)
 
 **What this shows**: an RNA-seq pipeline orchestrated via Nextflow DSL2 with
 substrate-aware audit + MLflow hooks on every process, mirroring the
 nf-core/rnaseq DAG shape (FastQC -> HISAT2 -> featureCounts -> MultiQC) on
 commodity hardware.
 
-**Reproducibility**: `make data && make run` produces the demo output in
-**~45 seconds** on a single Mac/Linux box. No GPU, no Docker, no cloud
-credentials.
+**Reproducibility**: `make data && make run` completes in **~45 seconds** on
+a single Mac/Linux box. No GPU, no Docker, no cloud credentials.
 
-**Substrate**: emits a 22-entry hash-chained NDJSON audit ledger spanning
+**Substrate**: emits a 22-entry NDJSON ledger with SHA-256 chaining across
 both the outer Python orchestrator and every inner Nextflow process, tracks
 MLflow per-run aggregate metrics, and exposes a canary smoke test that the
 Polish-Phase5 `lab_semantic_check.py` probe can call.
 
-**Production framing**: A version of this orchestration ran clinical RNA-seq
-cohorts at full reference scale on AWS HealthOmics during my time directing
-clinical bioinformatics at Gilead, with cost-of-failure budgets that made
-the audit chain non-optional. The lab version here proves the *orchestration
-engineering* and the *substrate integration*, not the biology, see
+**AWS HealthOmics context**: a production version of this orchestration
+processed clinical RNA-seq cohorts at full reference scale on AWS HealthOmics
+during my time directing clinical bioinformatics at Gilead. Audit integrity
+was a hard requirement, not an option. This repo demonstrates the orchestration
+engineering and substrate integration — not biology — see
 [`docs/what-is-out-of-scope.md`](docs/what-is-out-of-scope.md).
 
 ---
@@ -149,8 +146,7 @@ End-to-end run on the n=3 chr22-only cohort, chi-mac-p, 2026-05-23:
 
 The 3-4% alignment rate is the *correct* number for a chr22-only reference
 (chr22 is ~1.6% of GRCh38 by length, ~3% by expressed-transcript content).
-That is the engineering proof, not a biology weakness, see the
-scope section below.
+Expected given the reference choice; see the scope section below.
 
 ---
 
@@ -197,28 +193,26 @@ The first draft of this demo planned for a full-reference run with the
 open-tier ceilings pushed the design to a chr22 subset:
 
 1. **Reference download budget**: full GRCh38 + GENCODE is ~3.5 GB
-   compressed and the HISAT2 full-genome index is ~4 GB. That breaks the
-   "small and reproducible on a single workstation" contract and balloons
-   `make data` from 2 minutes to over an hour.
+   compressed and the HISAT2 full-genome index is ~4 GB. That balloons
+   `make data` from 2 minutes to over an hour and exceeds the size target
+   for a single-workstation demo.
 
 2. **Runtime budget**: full-genome HISAT2 + featureCounts on 1M paired reads
-   x 3 samples is ~15-25 minutes on a laptop. The chr22 subset runs in
-   under a minute, which keeps the `make run` feedback loop tight for
+   x 3 samples is ~15-25 minutes on a laptop. The chr22 subset completes in
+   ~45 seconds, keeping the `make run` feedback loop tight for
    substrate-integration debugging.
 
 So the v0.1 demo:
 
 - Uses chr22 only (~50 MB FASTA, ~3 MB GTF, ~62 MB HISAT2 index = ~115 MB
   total reference plane).
-- Accepts that alignment rate will land at 3-4% instead of 96% (the chr22
-  share of expressed transcripts).
-- Treats that rate as the *correct* number for the reference choice, not as
-  a result to optimize.
+- Expects a 3-4% alignment rate instead of ~96%; that is the chr22 share of
+  expressed transcripts, not a defect.
+- Makes no attempt to optimize that rate — the reference choice is fixed.
 
-The substrate value (22-entry hash-chained ledger covering both outer
-orchestrator and inner Nextflow processes) is fully demonstrated regardless
-of reference size. The orchestration question is independent of the
-biological question.
+The 22-entry NDJSON ledger spanning both the outer orchestrator and inner
+Nextflow processes is complete regardless of reference size. The orchestration
+question is independent of the biological question.
 
 A production reference run would replace exactly two manifest entries (the
 chr22 FASTA and GTF URLs in `data/manifest.yaml`) and re-run `make data &&
@@ -296,7 +290,7 @@ endpoints (`chi-mac-m:8081`, `chi-mac-m:5050`) before invoking `make run`.
 ├── docs/
 │   ├── architecture.md             # substrate integration diagram + fence-post note
 │   ├── tooling-versions.md         # tool versions + 5 lessons (L-phi/psi/omega/alpha2/beta2/chi)
-│   └── what-is-out-of-scope.md     # anti-scope-creep ledger
+│   └── what-is-out-of-scope.md     # scope boundary ledger
 └── scripts/
     ├── run_lab.sh                  # macOS-hardened launch wrapper (--fresh flag)
     └── check_english_only.py       # CJK scanner used by CI
@@ -311,7 +305,7 @@ full ledger. Short version: no full-reference alignment, no differential
 expression analysis, no multi-organism support, no Docker/Singularity
 container engine, no nf-core/rnaseq feature parity, no cloud cost
 optimization, no production HA. Those belong to the production version of
-this orchestration, not the capability portrait.
+this orchestration.
 
 ---
 
@@ -319,7 +313,7 @@ this orchestration, not the capability portrait.
 
 This repo was created from
 [`bioinformatics-repo-scaffold-template`](https://github.com/hryankim-architect/bioinformatics-repo-scaffold-template),
-the shared scaffold that every capability-portrait repo in the quartet
+the shared scaffold that every P-series repo in the quartet
 (P1 / P2 / P3 / P4) inherits. The substrate modules (`audit.py`,
 `tracking.py`, `canary.py`, `process_hooks.py`) are designed to be
 copy-and-edit, not pip-installed, so each repo can diverge as needed

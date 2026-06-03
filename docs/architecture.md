@@ -150,8 +150,8 @@ fence-post is the simpler invariant.
 
 ## Substrate integration points
 
-Same three loosely-coupled channels as every other capability-portrait
-repo, plus one P1-specific addition (`HEALTHOMICS_AUDIT_LEDGER`):
+Same three loosely-coupled channels as every other P-series repo, plus one
+P1-specific addition (`HEALTHOMICS_AUDIT_LEDGER`):
 
 | Channel | Module | Env var | Substrate endpoint |
 |---|---|---|---|
@@ -240,7 +240,6 @@ remote-first). They are complementary, not redundant.
   `nextflow.config`) so failures surface immediately in the audit chain.
   Production hardening belongs in a deployment-tier repo.
 
-The point is that this architecture is the *contract* between the
-orchestration capability portrait and the substrate. The contract is small
-and the implementation is small; expansion happens through additive
-profiles and PRs, not by re-architecting.
+This architecture defines the contract between the orchestration demo and
+the substrate. The contract is small and the implementation is small;
+expansion happens through additive profiles and PRs, not by re-architecting.
