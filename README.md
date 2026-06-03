@@ -2,7 +2,7 @@
 
 *Public reference data is subsetted to chr22 only; the full GRCh38 run would exceed the single-workstation size constraint this demo is designed to satisfy.*
 
-![ci](https://github.com/hryankim-architect/healthomics-lab-orchestrator/actions/workflows/ci.yml/badge.svg) ![english-only](https://github.com/hryankim-architect/healthomics-lab-orchestrator/actions/workflows/english-only.yml/badge.svg)
+![ci](https://github.com/hryankim-architect/healthomics-lab-orchestrator/actions/workflows/ci.yml/badge.svg)
 
 **What this shows**: an RNA-seq pipeline orchestrated via Nextflow DSL2 with
 substrate-aware audit + MLflow hooks on every process, mirroring the
@@ -269,8 +269,7 @@ endpoints (`chi-mac-m:8081`, `chi-mac-m:5050`) before invoking `make run`.
 ├── nextflow.config                 # params + profiles + env (PATH, audit ledger)
 ├── main.nf                         # DSL2 workflow + 4 processes (with stub: blocks)
 ├── .github/workflows/
-│   ├── ci.yml                      # ruff + pytest + canary + English-only/CJK scan
-│   └── english-only.yml            # CJK character scanner
+│   └── ci.yml                      # ruff + pytest + canary
 ├── data/
 │   ├── samples.csv                 # Nextflow input sheet (committed)
 │   ├── manifest.yaml               # SHA-256 manifest of reference + FASTQ URLs
@@ -290,7 +289,7 @@ endpoints (`chi-mac-m:8081`, `chi-mac-m:5050`) before invoking `make run`.
 │   └── what-is-out-of-scope.md     # scope boundary ledger
 └── scripts/
     ├── run_lab.sh                  # macOS-hardened launch wrapper (--fresh flag)
-    └── check_english_only.py       # CJK scanner used by CI
+    └── check_english_only.py       # CJK scanner run by the pre-commit hook
 ```
 
 ---
