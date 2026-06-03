@@ -15,7 +15,7 @@ a single Mac/Linux box. No GPU, no Docker, no cloud credentials.
 **Substrate**: emits a 22-entry NDJSON ledger with SHA-256 chaining across
 both the outer Python orchestrator and every inner Nextflow process, tracks
 MLflow per-run aggregate metrics, and exposes a canary smoke test that the
-Polish-Phase5 `lab_semantic_check.py` probe can call.
+`lab_semantic_check.py` probe can call.
 
 **AWS HealthOmics context**: a production version of this orchestration
 processed clinical RNA-seq cohorts at full reference scale on AWS HealthOmics
@@ -242,7 +242,7 @@ workstation that runs `scripts/run_lab.sh`.
 ## Substrate environment variables
 
 The substrate hooks read these at runtime; defaults are no-ops, so the demo
-runs cleanly on a fresh checkout without the Polish-Phase5 substrate
+runs cleanly on a fresh checkout without the substrate
 present:
 
 | Var | Default | What it does |
@@ -253,7 +253,7 @@ present:
 | `HEALTHOMICS_LAB_RUN_NAME` | derived (`lab-<UTC-stamp>`) | Overrides the run name in audit + MLflow entries. |
 | `HEALTHOMICS_LAB_CANARY_FIXTURE` | `tests/fixtures/canary.json` | Path used by `canary.py` for the deterministic smoke test. |
 
-On a Polish-Phase5 lab node, `scripts/run_lab.sh` exports the substrate
+On a lab node, `scripts/run_lab.sh` exports the substrate
 endpoints (`chi-mac-m:8081`, `chi-mac-m:5050`) before invoking `make run`.
 
 ---

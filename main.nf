@@ -8,7 +8,7 @@
  * full demo runs in under five minutes on a single laptop.
  *
  * Every process embeds substrate hooks via `python -m healthomics_lab.process_hooks`
- * so a Polish-Phase5 lab node receives the same audit / MLflow signals as
+ * so a lab node receives the same audit / MLflow signals as
  * other repos in this portfolio.
  *
  * See README.md for the "what this shows" framing and
