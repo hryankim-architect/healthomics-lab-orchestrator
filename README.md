@@ -53,35 +53,32 @@ intentional and is discussed in the scope-explicit section below.
 ## End-to-end pipeline
 
 ```
-                            samples.csv (3 paired-end FASTQs)
-                                       |
-       Python orchestrator             |     Nextflow DSL2 (main.nf)
-       (src/healthomics_lab/           |
-        pipeline.py)                   |
-                                       v
-       pipeline_start  -->  +-------------------------+
-       audit.emit          |  FASTQC      x 3 samples |--audit.emit (start/end)
-                            +-------------------------+
-       tracking.run().      |  HISAT2_ALIGN x 3        |--audit.emit (start/end)
-       start_run()          +-------------------------+   + align_rate_pct metric
-                            |  FEATURECOUNTS x 3       |--audit.emit (start/end)
-                            +-------------------------+   + assigned_pct metric
-                            |  MULTIQC (aggregate)     |--audit.emit (start/end)
-                            +-------------------------+
-                                       |
-       _run_nextflow()  <--------------+
-       returns exit code               |
-                                       v
-       Post-mortem:        +-------------------------+
-       parse audit chain,  |  results/multiqc/        |
-       MultiQC HTML size,  |  results/hisat2_align/   |
-       wall-clock         |  results/featurecounts/  |
-                            |  results/fastqc/         |
-                            +-------------------------+
-       tracking.log_metrics()
-                                       |
-       pipeline_end                    v
-       audit.emit          audit/local-demo.ndjson   (22 entries, hash-chained)
+samples.csv  (3 paired-end FASTQ samples)
+      |
+      v
+pipeline.py  --  Python orchestrator (outer bracket)
+      |
+      |   audit.emit("pipeline_start")
+      |   tracking.start_run()
+      v
+main.nf  --  Nextflow DSL2 pipeline          audit events
++----------------------------+
+|  FASTQC           x3       |  -->  start / end
++----------------------------+
+|  HISAT2_ALIGN     x3       |  -->  start / end  (+ align_rate_pct)
++----------------------------+
+|  FEATURECOUNTS    x3       |  -->  start / end  (+ assigned_pct)
++----------------------------+
+|  MULTIQC (aggregate)       |  -->  start / end
++----------------------------+
+      |
+      v
+pipeline.py  --  post-mortem (back in the orchestrator)
+      |   audit.verify()  +  MultiQC HTML size  +  wall-clock
+      |   tracking.log_metrics()
+      |   audit.emit("pipeline_end")
+      v
+audit/local-demo.ndjson   (22 entries, hash-chained)
 ```
 
 Every Nextflow process invokes `python -m healthomics_lab.process_hooks emit`
