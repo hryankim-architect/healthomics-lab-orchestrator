@@ -17,76 +17,32 @@ end-to-end.
 
 ## Two-layer control flow
 
-```
-                         Operator
-                            |
-                            v
-            scripts/run_lab.sh   (macOS env hardening)
-                            |
-                            v
-                       make run
-                            |
-                            v
-        +---------------------------------------+
-        |  pipeline.run_pipeline(run_name)      |
-        |  (src/healthomics_lab/pipeline.py)    |
-        +---------------------------------------+
-                            |
-                            +--->  audit.emit('pipeline_start')
-                            |
-                            +--->  tracking.run().start_run()
-                            |
-                            v
-            +--------------------------------+
-            |  _run_nextflow(job_id, ...)    |
-            |  subprocess.run(['nextflow',   |
-            |   'run', 'main.nf', ...])      |
-            +--------------------------------+
-                            |
-                            v
-        +---------------------------------------+
-        |  Nextflow DSL2 workflow (main.nf)    |
-        |                                       |
-        |  Channel.fromPath('samples.csv')      |
-        |       |                               |
-        |       v                               |
-        |  +----------------+                   |
-        |  | FASTQC x N     |--audit.emit START |
-        |  +----------------+--audit.emit END   |
-        |       |                               |
-        |       v                               |
-        |  +----------------+                   |
-        |  | HISAT2_ALIGN   |--audit.emit START |
-        |  +----------------+--audit.emit END   |
-        |       |                + align_rate   |
-        |       v                               |
-        |  +----------------+                   |
-        |  | FEATURECOUNTS  |--audit.emit START |
-        |  +----------------+--audit.emit END   |
-        |       |                + assigned_pct |
-        |       v                               |
-        |  +----------------+                   |
-        |  | MULTIQC        |--audit.emit START |
-        |  +----------------+--audit.emit END   |
-        +---------------------------------------+
-                            |
-                            v
-        +---------------------------------------+
-        |  Post-mortem (back in pipeline.py)    |
-        |                                       |
-        |  - audit.verify() -> (ok, n)          |
-        |  - MultiQC HTML size                  |
-        |  - tracking.log_metrics(...)          |
-        |  - tracking.log_artifact(multiqc.html)|
-        +---------------------------------------+
-                            |
-                            +--->  tracking.run() exit
-                            |
-                            +--->  audit.emit('pipeline_end')
-                            |
-                            v
-                  audit/local-demo.ndjson
-                  (22 entries, hash-chained)
+```mermaid
+flowchart TD
+    A([Operator]) --> B["scripts/run_lab.sh\n(macOS env hardening)"]
+    B --> C["make run"]
+    C --> D["pipeline.run_pipeline(run_name)\nsrc/healthomics_lab/pipeline.py"]
+
+    D --> E["audit.emit('pipeline_start')"]
+    D --> F["tracking.run().start_run()"]
+    D --> G["_run_nextflow(job_id, ...)\nsubprocess.run(['nextflow', 'run', 'main.nf', ...])"]
+
+    G --> H["Nextflow DSL2 workflow — main.nf\nChannel.fromPath('samples.csv')"]
+
+    H --> I["FASTQC × N\naudit.emit start/end per sample"]
+    I --> J["HISAT2_ALIGN × N\naudit.emit start/end + align_rate"]
+    J --> K["FEATURECOUNTS × N\naudit.emit start/end + assigned_pct"]
+    K --> L["MULTIQC\naudit.emit start/end"]
+
+    L --> M["Post-mortem — back in pipeline.py"]
+    M --> N["audit.verify() → ok, n"]
+    M --> O["MultiQC HTML size check"]
+    M --> P["tracking.log_metrics(...)"]
+    M --> Q["tracking.log_artifact(multiqc.html)"]
+
+    Q --> R["tracking.run() exit"]
+    R --> S["audit.emit('pipeline_end')"]
+    S --> T[("audit/local-demo.ndjson\n22 entries, hash-chained")]
 ```
 
 ---
@@ -109,9 +65,9 @@ shape on the n=3 demo cohort:
 The ordering is wall-clock monotonic, not lexical: Nextflow can run
 `FASTQC(SRR1039508)` and `HISAT2_ALIGN(SRR1039509)` concurrently when the
 DAG allows it, so the per-process entries interleave across samples and
-stages. Every entry includes `prev_hash`, so `audit.verify()` walks the
-chain in order and confirms each entry's `prev_hash` equals the SHA-256 of
-the canonical encoding of the preceding entry.
+stages. Each entry carries a `prev_hash` field. `audit.verify()` walks the
+chain in insertion order and checks that each entry's `prev_hash` equals
+the SHA-256 of the canonical encoding of the entry immediately before it.
 
 ---
 
@@ -139,26 +95,27 @@ So the on-ledger count when `pipeline_end` is written is `n+1` (where `n`
 is the value embedded inside that entry's `metrics`). On the demo cohort
 the embedded value is 21 and the final on-disk length is 22.
 
-This is *deliberate*. Putting the count inside the `pipeline_end` entry
+This is deliberate. Putting the count inside the `pipeline_end` entry
 makes the chain self-describing without requiring the closing entry to
-contain a forward reference to itself, which would either be circular
-(the entry's own `prev_hash` depends on its content, which would include
-the count) or would require a two-pass write (count, then re-hash). The
-fence-post is the simpler invariant.
+contain a forward reference to itself. A forward reference would be either
+circular (the entry's own `prev_hash` depends on its content, which would
+include the count) or would require a two-pass write (count, then re-hash).
+The fence-post avoids both problems.
 
 ---
 
 ## Substrate integration points
 
-Same three loosely-coupled channels as every other P-series repo, plus one
-P1-specific addition (`HEALTHOMICS_AUDIT_LEDGER`):
+This repo connects four loosely-coupled channels. Three are shared with
+the scaffold template; the fourth (`HEALTHOMICS_AUDIT_LEDGER`) is specific
+to this orchestrator's per-process hook design:
 
 | Channel | Module | Env var | Substrate endpoint |
 |---|---|---|---|
 | Audit (immutable record) | `healthomics_lab.audit` | `AUDIT_HOST` | `http://${AUDIT_HOST}/events` |
 | MLflow (experiment tracking) | `healthomics_lab.tracking` | `MLFLOW_TRACKING_URI` | configurable |
 | Canary (daily probe) | `healthomics_lab.canary` | `HEALTHOMICS_LAB_CANARY_FIXTURE` | invoked by `lab_semantic_check.py` |
-| Per-process audit (P1-specific) | `healthomics_lab.process_hooks` | `HEALTHOMICS_AUDIT_LEDGER` | shared local ledger |
+| Per-process audit (orchestrator-specific) | `healthomics_lab.process_hooks` | `HEALTHOMICS_AUDIT_LEDGER` | shared local ledger |
 
 The `HEALTHOMICS_AUDIT_LEDGER` env var is set by `nextflow.config` to an
 absolute path so per-task work-dir isolation (Nextflow gives each task its
@@ -166,7 +123,7 @@ own `work/<hash>/` directory) does not fragment the audit chain.
 
 All four channels degrade to no-ops when the substrate is absent. The
 deterministic local NDJSON ledger remains the source of truth for audit
-even when the remote post fails.
+even when a remote post fails.
 
 ---
 
@@ -204,15 +161,15 @@ launch-time hardening.
 
 Three reasons, in order:
 
-1. **Aggregate metric search**, MLflow's UI surfaces `wall_clock_seconds`,
-   `audit_chain_entries`, `multiqc_report_bytes` across runs so a reviewer
-   can compare performance over time without re-parsing audit files.
-2. **Substrate consistency**, every repo in the quartet posts to the same
+1. **Aggregate metric search**: MLflow's UI surfaces `wall_clock_seconds`,
+   `audit_chain_entries`, and `multiqc_report_bytes` across runs so a
+   reviewer can compare performance over time without re-parsing audit files.
+2. **Substrate consistency**: other repos in this portfolio post to the same
    MLflow server, so a reviewer can compare runs across projects in one
    browser tab.
-3. **No-op when absent**, the wrapper means the demo works without an
-   MLflow server, so a recruiter cloning the repo on a laptop still sees
-   `make run` succeed without any setup.
+3. **No-op when absent**: the wrapper means the demo works without an
+   MLflow server, so anyone cloning the repo on a laptop still gets a
+   successful `make run` without any extra setup.
 
 The audit chain is the *source of truth* (deterministic, tamper-evident,
 local-first). MLflow is the *search index* (queryable, comparative,

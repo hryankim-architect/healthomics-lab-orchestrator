@@ -3,13 +3,13 @@
 /*
  * healthomics-lab-orchestrator — main.nf
  *
- * Capability-portrait RNA-seq pipeline. Mirrors the nf-core/rnaseq DAG shape
+ * RNA-seq orchestration demo. Mirrors the nf-core/rnaseq DAG shape
  * (FastQC -> align -> count -> MultiQC) on a chr22 subset reference so the
  * full demo runs in under five minutes on a single laptop.
  *
  * Every process embeds substrate hooks via `python -m healthomics_lab.process_hooks`
  * so a Polish-Phase5 lab node receives the same audit / MLflow signals as
- * every other capability-portrait repo in the quartet.
+ * other repos in this portfolio.
  *
  * See README.md for the "what this shows" framing and
  * docs/what-is-out-of-scope.md for the anti-scope-creep ledger.

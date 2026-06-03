@@ -1,13 +1,12 @@
-# What is out of scope (P1, `healthomics-lab-orchestrator`)
+# What is out of scope — `healthomics-lab-orchestrator`
 
 This file tracks deliberate scope boundaries for the P1 orchestration demo.
-The repo's value comes from being *small and complete*. Every item below is
-something a reviewer might reasonably ask for that the v0.1 demo does not
-attempt.
+Keeping the demo small is deliberate. Every item below is something a
+reviewer might reasonably ask for that the v0.1 demo does not attempt.
 
-If a future PR proposes any of these, the contributor must answer one
-question: **why is this still out of scope?** If the answer is good, edit
-this file in the same PR. If not, the PR doesn't land.
+Want to move one of these in scope? The PR has to make the case for why it
+was excluded in the first place. If the case is convincing, edit this file
+alongside the change. Otherwise it stays out.
 
 ---
 
@@ -34,12 +33,12 @@ featureCounts matrix to identify differentially expressed genes between
 conditions. This demo stops at the per-sample count matrix.
 
 **Why out of scope**: DEG is the *analytical* method, not the
-*orchestration* capability. P3 (`tp53-aml-hrd-severity`) is the
-capability-portrait repo for analytical methods; this one is the
-orchestration portrait. Mixing them would dilute both. DEG would also
-require a second statistical surface (multiple-testing correction
-choices, design matrix specification, contrast definitions) that has
-nothing to do with whether the Nextflow + audit + MLflow stack works.
+*orchestration* capability. The analytical-method work lives in a separate
+repo; this one demonstrates orchestration. Mixing them would dilute both.
+DEG would also require a second statistical surface (multiple-testing
+correction choices, design matrix specification, contrast definitions)
+that has nothing to do with whether the Nextflow + audit + MLflow stack
+works.
 
 ---
 
@@ -169,11 +168,14 @@ is worth the cleaner cache invalidation behavior.
 
 ## Adding an item
 
-Open a PR that:
+Open a PR that does three things:
 
-1. Adds the item to the appropriate section above (or creates a new
-   section if none fits).
-2. Adds a one-sentence reason in italics for why it remains out of scope.
-3. Links to the upstream feature request or issue if there is one.
+1. Places the new item in the matching section above, or opens a new
+   section if nothing fits.
+2. Includes a one-sentence rationale (in italics) explaining why it stays
+   out of scope at this stage.
+3. Links the upstream issue or feature request if one exists.
 
-That's it. The friction is intentional.
+Keep the bar high. The point of this file is to prevent scope from
+expanding without a written reason. A PR that skips the rationale will not
+land.

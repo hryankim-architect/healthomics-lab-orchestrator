@@ -272,7 +272,7 @@ endpoints (`chi-mac-m:8081`, `chi-mac-m:5050`) before invoking `make run`.
 ├── nextflow.config                 # params + profiles + env (PATH, audit ledger)
 ├── main.nf                         # DSL2 workflow + 4 processes (with stub: blocks)
 ├── .github/workflows/
-│   ├── ci.yml                      # ruff + pytest + scope-preamble lint
+│   ├── ci.yml                      # ruff + pytest + canary + English-only/CJK scan
 │   └── english-only.yml            # CJK character scanner
 ├── data/
 │   ├── samples.csv                 # Nextflow input sheet (committed)
@@ -313,11 +313,10 @@ this orchestration.
 
 This repo was created from
 [`bioinformatics-repo-scaffold-template`](https://github.com/hryankim-architect/bioinformatics-repo-scaffold-template),
-the shared scaffold that every P-series repo in the quartet
-(P1 / P2 / P3 / P4) inherits. The substrate modules (`audit.py`,
-`tracking.py`, `canary.py`, `process_hooks.py`) are designed to be
-copy-and-edit, not pip-installed, so each repo can diverge as needed
-without coordinating releases.
+the shared scaffold that other repos in this portfolio also inherit.
+The substrate modules (`audit.py`, `tracking.py`, `canary.py`,
+`process_hooks.py`) are designed to be copy-and-edit, not pip-installed,
+so each repo can diverge as needed without coordinating releases.
 
 ---
 
