@@ -4,6 +4,10 @@
 
 ![ci](https://github.com/hryankim-architect/healthomics-lab-orchestrator/actions/workflows/ci.yml/badge.svg)
 
+> **One principle, applied here.** Pick the smallest, most interpretable representation that could carry the signal; measure it against an honest baseline; report the verdict faithfully — whether the compact choice wins, ties, or loses. *That last step is why AI safety is needed: knowing a capability is real rather than a flattering benchmark.*
+>
+> In this repo: **representation** a hash-linked NDJSON record as the representation of run provenance → **baseline** an unverifiable run log (the chain is the test) → **verdict** one append-only chain represents a whole Nextflow DSL2 pipeline's audit state, verifiable end-to-end.
+
 **What this shows**: an RNA-seq pipeline orchestrated via Nextflow DSL2 with
 substrate-aware audit + MLflow hooks on every process, mirroring the
 nf-core/rnaseq DAG shape (FastQC -> HISAT2 -> featureCounts -> MultiQC) on
@@ -219,14 +223,15 @@ make run`. Nothing in `main.nf` or `pipeline.py` changes.
 
 ## macOS-Nextflow integration lessons (the substrate war stories)
 
-Hour-3 real-data smoke surfaced five cascading lessons specific to running
-Nextflow on macOS in a conda + uv environment. All five are codified in
+Hour-3 real-data smoke surfaced six cascading lessons specific to running
+Nextflow on macOS in a conda + uv environment. All six are codified in
 [`docs/tooling-versions.md`](docs/tooling-versions.md) and the relevant fixes
 are landed in `nextflow.config` (`env { PATH = ... }`) and
 `scripts/run_lab.sh`. Short index:
 
 | ID | Symptom | Fix |
 |---|---|---|
+| **L-phi** | MultiQC `libtiff` soname mismatch in the base conda env | dedicated `multiqc` conda env + `conda run -n multiqc` |
 | **L-psi** | `Cannot find Java... up to 20` (Nextflow rejects conda Java 25) | `conda deactivate; unset JAVA_HOME JAVA_CMD` -> system Java 19 |
 | **L-omega** | `.command.sh: line N: python: command not found` after L-psi fix | prepend `${projectDir}/.venv/bin` to `env.PATH` |
 | **L-alpha2** | `.command.sh: line N: fastqc: command not found` after L-omega fix | append `${HOME}/miniconda3/bin` to `env.PATH` (after `/usr/bin` so Java order stays right) |
@@ -285,7 +290,7 @@ endpoints (`chi-mac-m:8081`, `chi-mac-m:5050`) before invoking `make run`.
 │   └── test_*.py
 ├── docs/
 │   ├── architecture.md             # substrate integration diagram + fence-post note
-│   ├── tooling-versions.md         # tool versions + 5 lessons (L-phi/psi/omega/alpha2/beta2/chi)
+│   ├── tooling-versions.md         # tool versions + 6 lessons (L-phi/psi/omega/alpha2/beta2/chi)
 │   └── what-is-out-of-scope.md     # scope boundary ledger
 └── scripts/
     ├── run_lab.sh                  # macOS-hardened launch wrapper (--fresh flag)
