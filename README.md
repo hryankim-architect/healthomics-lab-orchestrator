@@ -293,8 +293,7 @@ endpoints (`chi-mac-m:8081`, `chi-mac-m:5050`) before invoking `make run`.
 │   ├── tooling-versions.md         # tool versions + 6 lessons (L-phi/psi/omega/alpha2/beta2/chi)
 │   └── what-is-out-of-scope.md     # scope boundary ledger
 └── scripts/
-    ├── run_lab.sh                  # macOS-hardened launch wrapper (--fresh flag)
-    └── check_english_only.py       # CJK scanner run by the pre-commit hook
+    └── run_lab.sh                  # macOS-hardened launch wrapper (--fresh flag)
 ```
 
 ---
