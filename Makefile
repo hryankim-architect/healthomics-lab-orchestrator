@@ -1,6 +1,7 @@
 # healthomics-lab-orchestrator -- AWS HealthOmics pipeline orchestration demo
 # Targets are deliberately small. Every repo using this scaffold should be
-# reproducible end-to-end with `make data && make run && make test && make report`.
+# reproducible end-to-end with `make data && make run && make test`.
+# (make report requires notebooks/demo.ipynb, which is not present in v0.1.)
 
 PYTHON ?= .venv/bin/python
 UV ?= uv
@@ -17,10 +18,9 @@ help:
 	@echo "make data         Download + checksum-verify public inputs from data/manifest.yaml"
 	@echo "make run          Run the end-to-end pipeline (audit + MLflow hooks engaged)"
 	@echo "make test         Run pytest"
-	@echo "make report       Render demo notebook to HTML at reports/demo.html"
+	@echo "make report       (stub) notebooks/demo.ipynb not present in this repo"
 	@echo "make lint         ruff check"
 	@echo "make canary       Run the deterministic canary smoke test"
-	@echo "make  Check the honest-scope preamble is present in README"
 	@echo "make clean        Remove build artifacts (raw data left alone)"
 
 install:
@@ -36,6 +36,10 @@ test:
 	$(PYTHON) -m pytest -q
 
 report: | $(REPORT_DIR)
+	@if [ ! -f notebooks/demo.ipynb ]; then \
+	  echo "make report: notebooks/demo.ipynb not present (v0.1 does not ship a notebook)."; \
+	  exit 1; \
+	fi
 	$(PYTHON) -m jupyter nbconvert --to html --output-dir $(REPORT_DIR) notebooks/demo.ipynb
 
 lint:
