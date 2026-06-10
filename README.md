@@ -112,11 +112,11 @@ make install                  # uv sync --extra dev
 make data                     # populates data/reference/, data/fastq/
 
 # 3. Run the end-to-end pipeline
-#    macOS-specific: use scripts/run_lab.sh on chi-mac-p style hosts so the
+#    macOS-specific: use scripts/run_lab.sh on macOS lab hosts so the
 #    conda Java 25 / venv python / bioconda PATH dance is handled for you.
 scripts/run_lab.sh            # production form (substrate + macOS hardening)
 # OR, after `conda deactivate; unset JAVA_HOME JAVA_CMD`:
-make run                      # ~45 s on chi-mac-p; writes results/ + audit/
+make run                      # ~45 s on macOS; writes results/ + audit/
 
 # 4. Run the test suite (Nextflow subprocess is stubbed; runs in ~2 s)
 make test
@@ -129,7 +129,7 @@ make canary
 
 ## Real-data climax (the proof)
 
-End-to-end run on the n=3 chr22-only cohort, chi-mac-p, 2026-05-23:
+End-to-end run on the n=3 chr22-only cohort, macOS, 2026-05-23:
 
 | Pipeline metric | Value |
 |---|---|
@@ -161,7 +161,7 @@ ledger:
 ```json
 {
   "action": "pipeline_end",
-  "actor": "ryan@chi-mac-p",
+  "actor": "healthomics_lab@local",
   "fields": {
     "metrics": {
       "audit_chain_entries": 21.0,

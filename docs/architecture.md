@@ -140,7 +140,7 @@ in this priority order:
 5. ${shell PATH}                -> everything else from parent shell
 ```
 
-This order resolves a four-way conflict that surfaces on macOS chi-mac-p
+This order resolves a four-way conflict that surfaces on macOS
 when `(base)` conda is active:
 
 - Conda exports a `JAVA_HOME` pointing at miniconda Java 25 LTS, which
