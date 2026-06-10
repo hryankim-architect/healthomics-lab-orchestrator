@@ -2,8 +2,8 @@
 # Execute the RNA-seq orchestration pipeline on a lab node.
 #
 # This wraps `make run` with the substrate environment variables set to the
-# lab defaults, so audit entries flow to chi-mac-m:8081 and MLflow runs are
-# tracked at chi-mac-m:5050. On a fresh checkout without the substrate
+# lab defaults, so audit entries flow to localhost:8081 and MLflow runs are
+# tracked at localhost:5050. On a fresh checkout without the substrate
 # present, run `make run` directly instead.
 #
 # macOS-specific environment hardening (lessons L-psi / L-omega / L-alpha2 /
@@ -71,13 +71,13 @@ java -version 2>&1 | head -1 | sed 's/^/[run_lab] java: /'
 # ---------------------------------------------------------------------------
 # Step 2 — substrate endpoints (lab defaults; override per host if needed)
 # ---------------------------------------------------------------------------
-# Substrate host is `chi-mac-m` (where the audit-API and MLflow services run),
+# Substrate host is `localhost` (where the audit-API and MLflow services run),
 # matching every other repo in the lab and this repo's README. Override per host
 # by exporting AUDIT_HOST / MLFLOW_TRACKING_URI before invoking the wrapper —
 # e.g. the Tailscale magic-DNS name when the worker sits outside the LAN, or the
 # host's mDNS `.local` form if you want the LAN-direct path.
-export AUDIT_HOST="${AUDIT_HOST:-chi-mac-m:8081}"
-export MLFLOW_TRACKING_URI="${MLFLOW_TRACKING_URI:-http://chi-mac-m:5050}"
+export AUDIT_HOST="${AUDIT_HOST:-localhost:8081}"
+export MLFLOW_TRACKING_URI="${MLFLOW_TRACKING_URI:-http://localhost:5050}"
 export HEALTHOMICS_LAB_RUN_NAME="${HEALTHOMICS_LAB_RUN_NAME:-lab-$(date -u +%Y%m%d-%H%M%S)}"
 
 # ---------------------------------------------------------------------------
