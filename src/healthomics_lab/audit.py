@@ -13,7 +13,7 @@ The schema mirrors the audit format::
     {
         "ts": "2026-05-23T17:00:00Z",
         "action": "pipeline_start",
-        "actor": "healthomics_lab@chi-mac-p",
+        "actor": "healthomics_lab@local",
         "job_id": "demo-2026-05-23-17",
         "fields": {...arbitrary payload...},
         "prev_hash": "...",
@@ -26,7 +26,6 @@ import contextlib
 import hashlib
 import json
 import os
-import socket
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -41,9 +40,9 @@ def _now_iso() -> str:
 
 
 def _actor() -> str:
-    user = os.environ.get("USER", "anon")
-    host = socket.gethostname()
-    return f"{user}@{host}"
+    # Neutral by default so committed ledgers don't leak a real username/hostname
+    # into a public repo. Set AUDIT_ACTOR to attribute a run when that's wanted.
+    return os.environ.get("AUDIT_ACTOR", "healthomics_lab@local")
 
 
 def _canonical(entry: dict[str, Any]) -> bytes:

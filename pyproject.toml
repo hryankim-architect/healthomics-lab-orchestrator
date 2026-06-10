@@ -1,6 +1,6 @@
 [project]
 name = "healthomics_lab"
-version = "0.1.0"
+version = "0.2.0"
 description = "RNA-seq pipeline orchestrated via Nextflow DSL2 on lab infra, mirroring the nf-core/rnaseq DAG with audit-chained substrate hooks."
 readme = "README.md"
 license = { text = "MIT" }
