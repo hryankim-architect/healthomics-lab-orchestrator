@@ -136,8 +136,8 @@ End-to-end run on the n=3 chr22-only cohort, chi-mac-p, 2026-05-23:
 | Samples (paired-end, 1M reads each) | SRR1039508 / SRR1039509 / SRR1039512 |
 | Wall-clock (fresh run, 4 stages x 3 samples + MultiQC) | **43.8 seconds** |
 | Wall-clock (`-resume`, all 10 tasks cached) | ~8 seconds |
-| HISAT2 alignment rate per sample | 3.69% / 3.50% / 3.46% |
-| featureCounts assigned per sample | 31,118 / 29,319 / 29,388 (~3%) |
+| featureCounts on-target per sample | 31,118 / 29,319 / 29,388 reads (**3.1% / 2.92% / 2.93%** assigned, from the audit ledger) |
+| HISAT2 alignment rate per sample | recorded as `align_rate_pct = 0.0` in the committed demo ledger — a HISAT2-summary parse gap in that run, **not** a true 0% (featureCounts assigning ~3% means alignment was non-zero); pending a re-run to populate the real rate |
 | MultiQC HTML | **2.4 MB**, 12 reports aggregated |
 | Audit chain entries | **22** (1 pipeline_start + 20 per-process + 1 pipeline_end) |
 | Audit chain hash-chain validity | **`ok=True`** (replay verifies every `prev_hash`) |
@@ -145,9 +145,9 @@ End-to-end run on the n=3 chr22-only cohort, chi-mac-p, 2026-05-23:
 | Per-process MLflow metrics | `align_rate_pct`, `assigned_pct`, `assigned_reads` |
 | Aggregate MLflow metrics | `nextflow_wall_clock_seconds`, `audit_chain_entries`, `multiqc_report_bytes` |
 
-The 3-4% alignment rate is the *correct* number for a chr22-only reference
-(chr22 is ~1.6% of GRCh38 by length, ~3% by expressed-transcript content).
-Expected given the reference choice; see the scope section below.
+The ~3% on-target rate (featureCounts) is the *correct* number for a chr22-only
+reference (chr22 is ~1.6% of GRCh38 by length, ~3% by expressed-transcript
+content). Expected given the reference choice; see the scope section below.
 
 ---
 
