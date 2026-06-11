@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import subprocess
 import time
 import urllib.request
@@ -26,6 +27,23 @@ import click
 import yaml
 
 from healthomics_lab import audit, tracking
+
+
+class AssetUnavailable(RuntimeError):
+    """A required input is absent and downloads are disabled (offline mode).
+
+    Mirrors _offline/bin/offline_guard.py semantics; kept inline so this repo
+    stays self-sufficient (no cross-repo import at runtime).
+    """
+
+
+def _downloads_allowed() -> bool:
+    """Reach the network only when explicitly opted in via AI_ALLOW_DOWNLOAD=1.
+
+    Default (unset/0) is fully offline: cached inputs are used; a missing input
+    yields a clear, actionable error instead of a silent fetch.
+    """
+    return os.environ.get("AI_ALLOW_DOWNLOAD", "") not in ("", "0", "false", "False")
 
 
 def _run_id(name: str) -> str:
@@ -60,6 +78,14 @@ def fetch_manifest(manifest_path: Path, out_dir: Path) -> dict[str, Any]:
             results.append({"path": str(dest), "status": "cached"})
             continue
 
+        if not _downloads_allowed():
+            raise AssetUnavailable(
+                f"{rel} is not cached and downloads are disabled (offline mode).\n"
+                f"  expected at: {dest}\n"
+                f"  source url:  {url}\n"
+                f"  To seed once (needs network): set AI_ALLOW_DOWNLOAD=1, e.g.\n"
+                f"      AI_ALLOW_DOWNLOAD=1 _offline/bin/seed-assets.sh healthomics-lab-orchestrator"
+            )
         urllib.request.urlretrieve(url, dest)
         actual = _checksum(dest)
         if expected and actual != expected:
